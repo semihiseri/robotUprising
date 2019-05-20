@@ -35,9 +35,15 @@ class invaderBot():
                 _setMotors(speed, [motors[i]])
             
         setAllMotors((left, left, right, right))
+        
+        self.left = left
+        self.right = right
     
     def setLeftMotor(self, value):
-        pass
+        self.left = value
+        setMotors(self.left, self.right)
+        
     
     def setRightMotor(self, value):
-        pass
+        self.right = value
+        setMotors(self.left, self.right)
