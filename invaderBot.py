@@ -1,10 +1,12 @@
 
-from controller import Robot
-
+#from controller import Robot
+from controller import Supervisor
+import math
 
 class invaderBot():
     def __init__(self): # this might be overly complicated :/
-        self.robot = Robot()
+        #self.robot = Robot()
+        self.robot = Supervisor()
         
         def setup_motors(robot, motor_names):
             return [robot.getMotor(motor_name) for motor_name in motor_names]
@@ -42,8 +44,42 @@ class invaderBot():
     def setLeftMotor(self, value):
         self.left = value
         setMotors(self.left, self.right)
-        
     
     def setRightMotor(self, value):
         self.right = value
         setMotors(self.left, self.right)
+    
+    def getPosition(self):
+        """
+        Returns x, z, angle.
+        When looked from above, the coordinate system looks as follows:
+           -------------------->x
+          |\  (angle)
+          | \ 
+          |  \
+          |   \
+          |    \
+          |     \
+          |
+          V
+          z
+        """
+        subject = self.robot.getFromDef("kedi"); # note that kedi is the DEF value, not name!
+        position = subject.getPosition()
+        orientation = subject.getOrientation()
+        orientation = math.atan2(orientation[0], orientation[2])
+        orientation = math.degrees(orientation)
+        return [position[0],position[2],orientation]
+    
+    def getGoals(self):
+        goals = []
+        coinRoot = self.robot.getFromDef("COINS").getField("children")
+        
+        for idx in reversed(range(coinRoot.getCount())):
+            try:
+                coin = coinRoot.getMFNode(idx)
+                pos = coin.getPosition()
+                goals.append([pos[0], pos[2]])
+            except:
+                pass
+        return goals
